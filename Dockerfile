@@ -20,11 +20,10 @@ COPY --from=base /app/.next/standalone ./
 COPY --from=base /app/.next/static ./.next/static
 COPY --from=base /app/public ./public
 
-# Copy Prisma schema + CLI binary for runtime migration
+# Copy Prisma schema for runtime migration + install CLI globally
 COPY --from=base /app/prisma ./prisma
-COPY --from=base /app/node_modules/prisma ./node_modules/prisma
+RUN bun install -g prisma@5.22.0 2>&1
 
 EXPOSE 7860
 
-# npx prisma is faster than bunx because prisma is already in node_modules
-CMD ["sh", "-c", "npx prisma db push --accept-data-loss 2>&1 && bun server.js"]
+CMD ["sh", "-c", "prisma db push --accept-data-loss 2>&1 && bun server.js"]
