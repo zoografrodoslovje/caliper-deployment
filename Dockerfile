@@ -1,6 +1,6 @@
 ﻿FROM oven/bun:1 AS base
 WORKDIR /app
-COPY package.json bun.lock* ./
+COPY package.json bun.* ./
 RUN bun install
 COPY . .
 RUN bunx prisma generate
@@ -10,9 +10,9 @@ FROM oven/bun:1 AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 ENV HOSTNAME="0.0.0.0"
-# Note: We removed --skip-generate and ensured PORT=7860 is used
+ENV PORT=7860
+ENV DATABASE_URL=file:./dev.db
 
-# Copy the necessary files for the standalone app
 COPY --from=base /app/.next/standalone ./
 COPY --from=base /app/.next/static ./.next/static
 COPY --from=base /app/public ./public
@@ -22,5 +22,4 @@ COPY --from=base /app/prisma ./prisma
 
 EXPOSE 7860
 
-# FIXED COMMAND: Removed '--skip-generate' and forced PORT to 7860
-CMD ["sh", "-c", "bunx prisma db push --accept-data-loss && PORT=7860 bun run server.js"]
+CMD ["sh", "-c", "bunx prisma db push --accept-data-loss && bun run server.js"]
