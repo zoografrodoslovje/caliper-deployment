@@ -1,0 +1,85 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Lead {
+  id             String   @id @default(cuid())
+  externalId     String
+  name           String
+  dbaName        String
+  address        String
+  city           String
+  state          String
+  zipcode        String
+  license        String
+  facilityType   String
+  risk           String
+  inspectionDate String
+  inspectionType String
+  results        String
+  violations     String
+  latitude       String
+  longitude      String
+  website        String
+  email          String
+  phone          String
+  industry       String
+  description    String
+  country        String
+  domain         String
+  linkedin       String
+
+  emailValid     Boolean  @default(false)
+  domainValid    Boolean  @default(false)
+  mxValid        Boolean  @default(false)
+  emailCheckedAt DateTime?
+  domainCheckedAt DateTime?
+
+  score          Int      @default(0)
+
+  tags           String   @default("")
+  notes          String   @default("")
+
+  source         String   @default("socrata")
+  campaignId     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  campaign Campaign? @relation(fields: [campaignId], references: [id])
+
+  @@unique([externalId, source])
+  @@index([industry])
+  @@index([city])
+  @@index([emailValid])
+  @@index([domainValid])
+  @@index([score])
+}
+
+model Campaign {
+  id          String   @id @default(cuid())
+  name        String
+  status      String   @default("active")
+  source      String   @default("socrata")
+  queryFilter String?
+  totalFetched Int     @default(0)
+  totalValid   Int     @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  leads Lead[]
+}
+
+model ValidationLog {
+  id        String   @id @default(cuid())
+  type      String
+  input     String
+  isValid   Boolean
+  details   String?
+  createdAt DateTime @default(now())
+}
