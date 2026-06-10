@@ -20,8 +20,10 @@ COPY --from=base /app/.next/standalone ./
 COPY --from=base /app/.next/static ./.next/static
 COPY --from=base /app/public ./public
 
-# Copy Prisma schema for runtime migration + install CLI globally
+# Copy Prisma schema + client for runtime migration
 COPY --from=base /app/prisma ./prisma
+COPY --from=base /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=base /app/node_modules/@prisma/client ./node_modules/@prisma/client
 RUN bun install -g prisma@5.22.0 2>&1
 
 EXPOSE 7860
