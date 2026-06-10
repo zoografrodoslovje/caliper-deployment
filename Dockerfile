@@ -18,4 +18,4 @@ COPY --from=base /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=base /app/node_modules/@prisma ./node_modules/@prisma
 COPY --from=base /app/prisma ./prisma
 EXPOSE 7860
-CMD ["sh", "-c", "bunx prisma db push --skip-generate --accept-data-loss && bun run server.js"]
+CMD ["sh", "-c", "bunx prisma db push --accept-data-loss && bun run server.js"]
