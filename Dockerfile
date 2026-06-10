@@ -15,16 +15,16 @@ ENV HOSTNAME="0.0.0.0"
 ENV PORT=7860
 ENV DATABASE_URL=file:./dev.db
 
-# Copy standalone build (includes bundled node_modules)
+# Copy standalone build (includes bundled node_modules + server.js)
 COPY --from=base /app/.next/standalone ./
 COPY --from=base /app/.next/static ./.next/static
 COPY --from=base /app/public ./public
 
-# Copy Prisma schema + CLI for runtime migration
+# Copy Prisma schema + CLI binary for runtime migration
 COPY --from=base /app/prisma ./prisma
 COPY --from=base /app/node_modules/prisma ./node_modules/prisma
-COPY --from=base /app/node_modules/@prisma/engines ./node_modules/@prisma/engines
 
 EXPOSE 7860
 
-CMD ["sh", "-c", "bunx prisma db push --skip-generate --accept-data-loss 2>&1 && bun server.js"]
+# npx prisma is faster than bunx because prisma is already in node_modules
+CMD ["sh", "-c", "npx prisma db push --accept-data-loss 2>&1 && bun server.js"]
