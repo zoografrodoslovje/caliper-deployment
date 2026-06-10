@@ -1,0 +1,2 @@
+# Prevent UTF-8 BOM from being committed
+*.prisma text eol=lf
